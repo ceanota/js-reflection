@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Test 'js-reflection'</title>
+    </head>
+    <body>
+
+        <div id="test">
+            <p data-bind="text:$root.koFunc()" >Hello</p>
+            <p data-bind="text:$root.koComp()" >Hello</p>
+        </div>
+
+        <script src="knockout-3.2.0.debug.js" ></script>
+        <script data-main="main" src="../bower_components/requirejs/require.js"></script>
+    </body>
+</html>
