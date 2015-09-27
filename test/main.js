@@ -81,7 +81,7 @@ function moduleDefinition(ko, reflectionFactory){
 if(typeof requirejs === "function"){
 
     requirejs.config({packages: [
-        { name: 'underscore_like', location: '../dependencies', main: 'lodash' },
+        { name: '_', location: '../dependencies', main: 'lodash' },
         { name: 'reflectionFactory', location: '../src', main: 'reflectionFactory' },
         { name: 'ko', location: './', main: 'knockout-3.2.0.debug' },
         // ... other packages ...

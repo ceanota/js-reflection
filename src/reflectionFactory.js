@@ -353,7 +353,7 @@
     }
 
     if(typeof define === "function"){
-        define(["underscore_like"],moduleDefinition);
+        define(["_"],moduleDefinition);
     }else{
         window.reflectionFactory = moduleDefinition(_);
     }
