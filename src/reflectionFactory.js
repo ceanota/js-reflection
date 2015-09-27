@@ -353,7 +353,7 @@
     }
 
     if(typeof define === "function"){
-        define(["../dependencies/lodash"],moduleDefinition);
+        define(["underscore_like"],moduleDefinition);
     }else{
         window.reflectionFactory = moduleDefinition(_);
     }

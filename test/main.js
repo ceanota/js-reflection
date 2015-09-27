@@ -1,58 +1,58 @@
 "use strict";
 
-function objFactory(){
+function moduleDefinition(ko, reflectionFactory){
 
-    //-- définition des objets.
-    function function1(value, value1, valu2){
+    function objFactory(){
 
-        console.log(value);
-        return {"hello":"chao"};
-    }
+        //-- définition des objets.
+        function function1(value, value1, valu2){
 
-    function function2() {
-        console.log("base2");
-    }
+            console.log(value);
+            return {"hello":"chao"};
+        }
 
-    window.obj = {
+        function function2() {
+            console.log("base2");
+        }
 
-        function1: function1,
-        function2: function2,
+        var obj = {
 
-        obj2:{
+            function1: function1,
+            function2: function2,
 
-            function1: function1.bind(this),
-            function2: function2.bind(this),
-            func : function(rien){
-
-                console.log("Thiet gioi Phuong");
-                return {phuong:"phuong"};
-            },
-
-            obj3:{
+            obj2:{
 
                 function1: function1.bind(this),
                 function2: function2.bind(this),
-                func : function(rien, rien2){
-                    console.log("Thiet gioi Lien");
-                    return {phuong:"Lien"};
+                func : function(rien){
+
+                    console.log("Thiet gioi Phuong");
+                    return {phuong:"phuong"};
                 },
-                koFunc: ko.observable("")
+
+                obj3:{
+
+                    function1: function1.bind(this),
+                    function2: function2.bind(this),
+                    func : function(rien, rien2){
+                        console.log("Thiet gioi Lien");
+                        return {phuong:"Lien"};
+                    },
+                    koFunc: ko.observable("")
 
 
+                }
             }
         }
+
+        obj.obj2.obj3.koComp = ko.computed(function(){
+            return obj.obj2.obj3.koFunc() + "-- koComp"; 
+        });
+
+        obj.constructor = objFactory;
+
+        return obj;
     }
-
-    obj.obj2.obj3.koComp = ko.computed(function(){
-        return obj.obj2.obj3.koFunc() + "-- koComp"; 
-    });
-
-    obj.constructor = objFactory;
-
-    return obj;
-}
-
-function moduleDefinition(reflectionFactory){
 
     //-- instanciation de l'objet exemple.
     var obj = objFactory();
@@ -61,27 +61,36 @@ function moduleDefinition(reflectionFactory){
     var node = document.getElementById("test");
     ko.applyBindings(obj.obj2.obj3, node);
 
-    
+
     window.obj = obj;
-    
+
     var options = reflectionFactory.get_options_default();
-    
+
     var reflection = reflectionFactory(options);
-    
+
     var objInfo = reflection.reflection(obj.obj2,obj, "obj",function(){
-    
-        
-        
+
+
+
     });
-    
+
     debugger;
 
 }
 
 if(typeof requirejs === "function"){
-    requirejs(["../src/reflectionFactory"],moduleDefinition);
+
+    requirejs.config({packages: [
+        { name: 'underscore_like', location: '../dependencies', main: 'lodash' },
+        { name: 'reflectionFactory', location: '../src', main: 'reflectionFactory' },
+        { name: 'ko', location: './', main: 'knockout-3.2.0.debug' },
+        // ... other packages ...
+    ]});
+
+    requirejs(["ko","reflectionFactory"],moduleDefinition);
+
 }else{
-    moduleDefinition(meld,reflectionFactory, extendMeldInfo);
+    moduleDefinition(ko, reflectionFactory);
 }
 
 
