@@ -135,7 +135,7 @@
                     var propName = propNames[idx];
 
                     var prop = obj[propName];
-                    if(typeof prop === "function"){
+                    if(typeof prop === "function" && propName != "constructor" ){
                         var longName = objName + "." + propName;
                         var funcInfo = functionInfoFactory(longName, propName,obj[propName], obj, globalObj, objName) ;
                         objInfo.infoSet[propName] = funcInfo;
@@ -210,8 +210,12 @@
             function getObjInfo(obj, globalObj, globlaObjName, callback){
 
                 var namesTemp = [];
-                var objName = search(globalObj, globlaObjName, namesTemp, obj);
-
+                var objName = globlaObjName;
+                
+                if(globalObj && obj !== globalObj){
+                    objName = search(globalObj, globlaObjName, namesTemp, obj);
+                }
+                
                 if(!(_objectInfoSet[objName] === undefined)){
                     if(callback){
                         for(var meta_func_name in _objectInfoSet[objName]){

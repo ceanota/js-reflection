@@ -77,6 +77,7 @@ function moduleDefinition(ko, dpReflectionFactory){
     options.getParamNames_flag = true;
 
     var reflection = dpReflectionFactory(options);
+    var objInfo = reflection.getObjInfo(obj,obj, "obj");
     debugger;
 
 }
