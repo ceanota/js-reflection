@@ -15,6 +15,16 @@ function moduleDefinition(ko, dpReflectionFactory){
             console.log("base2");
         }
 
+        function _func (rien){
+
+            var result = {phuong:"phuong"};
+            
+            var objInfo = reflection.getObjInfo(obj.obj2,obj, "obj");
+            console.log(objInfo.findFuncInfo(_func).toString(arguments,result));
+
+            return result;
+        }
+
         var obj = {
 
             function1: function1,
@@ -24,11 +34,7 @@ function moduleDefinition(ko, dpReflectionFactory){
 
                 function1: function1.bind(this),
                 function2: function2.bind(this),
-                func : function(rien){
-
-                    console.log("Thiet gioi Phuong");
-                    return {phuong:"phuong"};
-                },
+                func : _func,
                 obj3:{
 
                     function1: function1.bind(this),
@@ -71,13 +77,6 @@ function moduleDefinition(ko, dpReflectionFactory){
     options.getParamNames_flag = true;
 
     var reflection = dpReflectionFactory(options);
-
-    var objInfo = reflection.getObjInfo(obj.obj2,obj, "obj",function(){
-
-
-
-    });
-
     debugger;
 
 }
