@@ -1,6 +1,6 @@
 "use strict";
 
-function moduleDefinition(ko, reflectionFactory){
+function moduleDefinition(ko, dpReflectionFactory){
 
     function objFactory(){
 
@@ -29,7 +29,6 @@ function moduleDefinition(ko, reflectionFactory){
                     console.log("Thiet gioi Phuong");
                     return {phuong:"phuong"};
                 },
-
                 obj3:{
 
                     function1: function1.bind(this),
@@ -41,6 +40,10 @@ function moduleDefinition(ko, reflectionFactory){
                     koFunc: ko.observable("")
 
 
+                },
+                obj4:{
+
+                    func4: function(){ return "func4" }
                 }
             }
         }
@@ -64,11 +67,12 @@ function moduleDefinition(ko, reflectionFactory){
 
     window.obj = obj;
 
-    var options = reflectionFactory.get_options_default();
+    var options = dpReflectionFactory.get_options_default();
+    options.getParamNames_flag = true;
 
-    var reflection = reflectionFactory(options);
+    var reflection = dpReflectionFactory(options);
 
-    var objInfo = reflection.reflection(obj.obj2,obj, "obj",function(){
+    var objInfo = reflection.getObjInfo(obj.obj2,obj, "obj",function(){
 
 
 
@@ -82,15 +86,15 @@ if(typeof requirejs === "function"){
 
     requirejs.config({packages: [
         { name: '_', location: '../dependencies', main: 'lodash' },
-        { name: 'reflectionFactory', location: '../src', main: 'reflectionFactory' },
+        { name: 'dpReflectionFactory', location: '../src', main: 'dpReflectionFactory' },
         { name: 'ko', location: './', main: 'knockout-3.2.0.debug' },
         // ... other packages ...
     ]});
 
-    requirejs(["ko","reflectionFactory"],moduleDefinition);
+    requirejs(["ko","dpReflectionFactory"],moduleDefinition);
 
 }else{
-    moduleDefinition(ko, reflectionFactory);
+    moduleDefinition(ko, dpReflectionFactory);
 }
 
 

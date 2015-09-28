@@ -7,9 +7,9 @@
 
         "use strict";
 
-        function reflectionFactory(options_user){
+        function dpReflectionFactory(options_user){
 
-            var _options = _.extend({}, reflectionFactory.get_options_default(), options_user);
+            var _options = _.extend({}, dpReflectionFactory.get_options_default(), options_user);
             var _found = null;
             var _idx_search = 0;
             var _objectInfoSet = {};
@@ -74,7 +74,7 @@
                 }
 
                 var arguments_str = [];
-                if (args.length > 0){
+                if (args && args.length > 0){
                     for(var idx in args){
                         var arg = args[idx];
 
@@ -128,6 +128,7 @@
                 objInfo.objName = objName;
                 objInfo.findFuncName = function findFuncName(func){ return _findFuncName(objInfo,func)  };
                 objInfo.findFuncInfo =function findFuncInfo(funcName){ return _findFuncInfo(objInfo,funcName)  };
+                objInfo.infoSet = {};
 
                 var propNames = Object.getOwnPropertyNames(obj);
                 for(var idx = 0; idx < propNames.length; idx++){
@@ -137,7 +138,7 @@
                     if(typeof prop === "function"){
                         var longName = objName + "." + propName;
                         var funcInfo = functionInfoFactory(longName, propName,obj[propName], obj, globalObj, objName) ;
-                        objInfo[propName] = funcInfo;
+                        objInfo.infoSet[propName] = funcInfo;
 
                         if(callback){
                             callback(propName,longName, prop, obj, funcInfo);
@@ -206,9 +207,10 @@
 
             }
 
-            function reflection(obj, globalObj, globlaObjName, callback){
+            function getObjInfo(obj, globalObj, globlaObjName, callback){
 
-                var objName = search(globalObj, globlaObjName, [], obj);
+                var namesTemp = [];
+                var objName = search(globalObj, globlaObjName, namesTemp, obj);
 
                 if(!(_objectInfoSet[objName] === undefined)){
                     if(callback){
@@ -237,7 +239,7 @@
 
             var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
             var ARGUMENT_NAMES = /([^\s,]+)/g;
-            
+
             function getParamNames(func) {
                 var fnStr = func.toString().replace(STRIP_COMMENTS, '');
                 var result = fnStr.slice(fnStr.indexOf('(')+1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
@@ -253,7 +255,7 @@
 
                 //-- on détermine le nom de la fonction 'funcName'.
                 var objTemp = objInfo.obj;
-                var propNames = Object.getOwnPropertyNames(objInfo.obj);
+                var propNames = Object.getOwnPropertyNames(objTemp);
                 var funcName;
                 for(var idx in propNames){
                     var propName = propNames[idx];
@@ -266,20 +268,36 @@
                 return funcName;
             }
 
-            function _findFuncInfo(objInfo,funcName){
+            function _findFuncInfo(objInfo,func){
+
+                var funcNameTemp;
+                var funcInstanceTemp;
+                
+                if(typeof func === "string"){
+                    var parts = func.split(".");
+                    funcNameTemp = parts[parts.length-1];
+                }else if(typeof func === "function"){
+                    funcInstanceTemp = func;
+                }
 
                 //-- on détermine func info.
                 var funcInfo;
-                if (!!(funcName)){
-                    var propNames = Object.getOwnPropertyNames(objInfo);
+                if (!!(funcNameTemp) || !!(funcInstanceTemp)){
+                    var infoSet = objInfo.infoSet;
+                    var propNames = Object.getOwnPropertyNames(infoSet);
                     for(var idx in propNames){
                         var propNameTemp = propNames[idx];
-                        if(!!(objInfo[propNameTemp].longFunctName) && objInfo[propNameTemp].funcName ===  funcName){
-                            funcInfo = objInfo[propNameTemp];
+                        if(!!(infoSet[propNameTemp].longFunctName) && infoSet[propNameTemp].funcName ===  funcNameTemp){
+                            funcInfo = infoSet[propNameTemp];
+                            break;
+                        }else if(funcInstanceTemp === infoSet[propNameTemp].func){
+                            funcInfo = infoSet[propNameTemp];
                             break;
                         }
                     }
                 }
+
+
 
                 return funcInfo;
             }
@@ -330,13 +348,13 @@
             var _objInfo = {
                 getParamNames: getParamNames,
                 search:search,
-                reflection:reflection,
+                getObjInfo:getObjInfo,
                 objectInfoSet: _objectInfoSet,
                 findFirstPropOwner : findFirstPropOwner,
                 get_options_default: get_options_default,
                 dispose : dispose
             };
-            
+
             return _objInfo;
         }
 
@@ -347,15 +365,15 @@
             return options_default;
         };
 
-        reflectionFactory.get_options_default = get_options_default;
+        dpReflectionFactory.get_options_default = get_options_default;
 
-        return reflectionFactory;
+        return dpReflectionFactory;
     }
 
     if(typeof define === "function"){
         define(["_"],moduleDefinition);
     }else{
-        window.reflectionFactory = moduleDefinition(_);
+        window.dpReflectionFactory = moduleDefinition(_);
     }
 })();
 
